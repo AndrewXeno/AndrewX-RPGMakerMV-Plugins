@@ -100,7 +100,7 @@ AndrewX.OTF = AndrewX.OTF || {};
 		if (this._higherLevel === undefined) {
 			this._higherLevel = true;
 		}
-		if (disableBush === "ON" && this._higherLevel === true) {
+		if (disableBush.toUpperCase() === "ON" && this._higherLevel === true) {
 			this._bushDepth = 0;
 		}
 	};
@@ -128,7 +128,7 @@ AndrewX.OTF = AndrewX.OTF || {};
 
 	AndrewX.OTF.isOnDamageFloor = Game_Player.prototype.isOnDamageFloor;
 	Game_Player.prototype.isOnDamageFloor = function() {
-		if (disableDamage === "ON" && this._higherLevel === true) {
+		if (disableDamage.toUpperCase() === "ON" && this._higherLevel === true) {
 			return false;
 		}
 		return $gameMap.isDamageFloor(this.x, this.y) && !this.isInAirship();
