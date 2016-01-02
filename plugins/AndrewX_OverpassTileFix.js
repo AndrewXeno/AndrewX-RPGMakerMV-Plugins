@@ -6,7 +6,7 @@ var AndrewX = AndrewX || {};
 AndrewX.OTF = AndrewX.OTF || {};
 //=============================================================================
 /*:
- * @plugindesc v0.10 Add collision & trigger check and initial layers for events when using OverpassTile.js and more.
+ * @plugindesc v0.20 Add collision & trigger check and initial layers for events when using OverpassTile.js and more.
  * @author AndrewX
  *
  * @param Disable Damage Floor
@@ -59,6 +59,9 @@ AndrewX.OTF = AndrewX.OTF || {};
  * ============================================================================
  * Changelog
  * ============================================================================
+ *
+ * Version 0.20:
+ * Add: [Test] Fix higher level event priority issue
  * 
  * Version 0.10:
  * - Finished prototype
@@ -134,4 +137,16 @@ AndrewX.OTF = AndrewX.OTF || {};
 		return $gameMap.isDamageFloor(this.x, this.y) && !this.isInAirship();
 	};
 
+	AndrewX.OTF.screenZ = Game_CharacterBase.prototype.screenZ;
+    Game_CharacterBase.prototype.screenZ = function() {
+        if (this._higherLevel) {
+            if (this._priorityType===0){
+                return 4;
+            } else if (this._priorityType===2){
+                return 6;
+            }
+            return 5;
+        }
+        return AndrewX.OTF.screenZ.call(this);
+    };
 })();

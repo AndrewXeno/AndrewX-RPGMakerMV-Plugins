@@ -63,7 +63,7 @@ Game_Event.prototype.updateChaseMovement = function() {
 			this.moveAwayFromPlayer();
 		} else {
 			this.clearTarget();
-			Yanfly.ECP.Game_Event_updateSelfMovement.call(this);
+			AndrewX.SECP.updateChaseMovement.call(this);
 		}
 	} else {
 		this.clearTarget();
