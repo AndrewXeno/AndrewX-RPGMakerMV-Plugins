@@ -22,8 +22,6 @@ Adds collision & trigger check and initial layers for events when using Overpass
 
 Makes gauges in game prettier.
 
-## Makes gauges in game prettier.
-
 ### AndrewX_SmartEventChasePlayer.js
 
 Integrates Shaz's Smart Path finding into Yanfly's Event Chase Player plugin.
