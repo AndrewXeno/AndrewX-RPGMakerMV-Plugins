@@ -61,7 +61,7 @@ AndrewX.OTF = AndrewX.OTF || {};
  * ============================================================================
  *
  * Version 0.20:
- * Add: [Test] Fix higher level event priority issue
+ * Add: [Test] Fix for higher level event priority issue
  * 
  * Version 0.10:
  * - Finished prototype

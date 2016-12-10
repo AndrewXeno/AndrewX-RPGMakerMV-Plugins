@@ -6,7 +6,7 @@ var AndrewX = AndrewX || {};
 AndrewX.ETP = AndrewX.ETP || {};
 //=============================================================================
 /*:
- * @plugindesc v0.82 Enable characters to walk behind walls. 
+ * @plugindesc v0.90beta Enable characters to walk behind walls. 
  * Also enable you to modify tile passage and priority.
  * @author AndrewX
  *
@@ -96,6 +96,9 @@ AndrewX.ETP = AndrewX.ETP || {};
  * Changelog
  * ============================================================================
  *
+ * Version 0.90beta:
+ * - New: Added support for MV 1.31
+ * 
  * Version 0.82:
  * - Modified: Added default parameter values.
  * 
@@ -374,7 +377,7 @@ AndrewX.ETP = AndrewX.ETP || {};
 	// Modified _paintTiles
 	//=============================================================================
 
-	AndrewX.ETP._paintTiles = Tilemap.prototype._paintTiles;
+	AndrewX.ETP._paintTiles_Tilemap = Tilemap.prototype._paintTiles;
 	Tilemap.prototype._paintTiles = function(startX, startY, x, y) {
 		if (($gameMap.regionId(startX + x, startY + y) &&
 				starId.contains($gameMap.regionId(startX + x, startY + y))) ||
@@ -436,13 +439,9 @@ AndrewX.ETP = AndrewX.ETP || {};
 				}
 			}
 
-			var count = 1000 + this.animationCount - my;
-			var frameUpdated = (count % 30 === 0);
-			this._animationFrame = Math.floor(count / 30);
-
 			var lastLowerTiles = this._readLastTiles(0, lx, ly);
 			if (!lowerTiles.equals(lastLowerTiles) ||
-				(Tilemap.isTileA1(tileId0) && frameUpdated)) {
+				(Tilemap.isTileA1(tileId0) && this._frameUpdated)) {
 				this._lowerBitmap.clearRect(dx, dy, this._tileWidth, this._tileHeight);
 				for (var i = 0; i < lowerTiles.length; i++) {
 					var lowerTileId = lowerTiles[i];
@@ -466,7 +465,69 @@ AndrewX.ETP = AndrewX.ETP || {};
 				this._writeLastTiles(1, lx, ly, upperTiles);
 			}
 		} else {
-			AndrewX.ETP._paintTiles.call(this, startX, startY, x, y);
+			AndrewX.ETP._paintTiles_Tilemap.call(this, startX, startY, x, y);
+		}
+	};
+
+	AndrewX.ETP._paintTiles_ShaderTilemap = ShaderTilemap.prototype._paintTiles;
+	ShaderTilemap.prototype._paintTiles = function(startX, startY, x, y) {
+		if (($gameMap.regionId(startX + x, startY + y) &&
+				starId.contains($gameMap.regionId(startX + x, startY + y))) ||
+			($gameMap.regionId(startX + x, startY + y) &&
+				higherId.contains($gameMap.regionId(startX + x, startY + y))) ||
+			this._tileHasTag(startX + x, startY + y, starTag) ||
+			this._tileHasTag(startX + x, startY + y, topTag) ||
+			this._tileHasTag(startX + x, startY + y, frontTag)) {
+			var mx = startX + x;
+			var my = startY + y;
+			var dx = x * this._tileWidth,
+				dy = y * this._tileHeight;
+			var tileId0 = this._readMapData(mx, my, 0);
+			var tileId1 = this._readMapData(mx, my, 1);
+			var tileId2 = this._readMapData(mx, my, 2);
+			var tileId3 = this._readMapData(mx, my, 3);
+			var shadowBits = this._readMapData(mx, my, 4);
+			var upperTileId1 = this._readMapData(mx, my - 1, 1);
+			var lowerLayer = this.lowerLayer.children[0];
+			var upperLayer = this.upperLayer.children[0];
+
+			var isHigher = this._isHigherTileNew(mx, my);
+
+			if (isHigher) {
+				this._drawTile(upperLayer, tileId0, dx, dy);
+			} else {
+				this._drawTile(lowerLayer, tileId0, dx, dy);
+			}
+			if (isHigher) {
+				this._drawTile(upperLayer, tileId1, dx, dy);
+			} else {
+				this._drawTile(lowerLayer, tileId1, dx, dy);
+			}
+
+			this._drawShadow(lowerLayer, shadowBits, dx, dy);
+			if (this._isTableTile(upperTileId1) && !this._isTableTile(tileId1)) {
+				if (!Tilemap.isShadowingTile(tileId0)) {
+					this._drawTableEdge(lowerLayer, upperTileId1, dx, dy);
+				}
+			}
+
+			if (this._isOverpassPosition(mx, my)) {
+				this._drawTile(upperLayer, tileId2, dx, dy);
+				this._drawTile(upperLayer, tileId3, dx, dy);
+			} else {
+				if (isHigher) {
+					this._drawTile(upperLayer, tileId2, dx, dy);
+				} else {
+					this._drawTile(lowerLayer, tileId2, dx, dy);
+				}
+				if (isHigher) {
+					this._drawTile(upperLayer, tileId3, dx, dy);
+				} else {
+					this._drawTile(lowerLayer, tileId3, dx, dy);
+				}
+			}
+		} else {
+			AndrewX.ETP._paintTiles_ShaderTilemap.call(this, startX, startY, x, y);
 		}
 	};
 

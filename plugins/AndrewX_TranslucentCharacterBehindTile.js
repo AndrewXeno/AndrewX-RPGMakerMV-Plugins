@@ -33,7 +33,7 @@ AndrewX.TCBT = AndrewX.TCBT || {};
  * high layer translucent sprite will indicate where he is.
  *
  * Usage:
- * 1. Installed: Just enable the plugin in the Plugin Manager.
+ * 1. Installation: Just enable the plugin in the Plugin Manager.
  * 
  * 2. Setup parameters.
  *  a. Default Opacity Rate: 
